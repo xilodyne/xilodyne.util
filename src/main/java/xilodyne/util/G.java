@@ -7,7 +7,7 @@ import java.util.logging.Level;
  * Uses {@link java.util.logging.Level} definitions.
  * 
  * @author Austin Davis Holiday, aholiday@xilodyne.com
- * @version 0.1
+ * @version 0.2 - Add global print var
  *
  */
 public class G {
@@ -36,10 +36,15 @@ public class G {
 	/** Abbreviated LOG_OFF */
 	public static final Level lO = Level.OFF;
 	
+	/** Enable log to file */
+	public static final boolean LOG_TO_FILE = true;
+	public static final boolean LOG_TO_FILE_OFF = false;
+	
 	/** Updated variables */
 	private static boolean SETTING_LOG_DATE_ABBREVIATED = true;
 	private static boolean SETTING_LOG_SHOW_DATE = true;
 	private static Level SETTING_LOGLEVEL = Level.OFF;
+	private static boolean SETTING_LOG_TO_FILE = false;
 
 	public static void setLoggerLevel(Level level) {
 		G.SETTING_LOGLEVEL = level;
@@ -47,6 +52,14 @@ public class G {
 	
 	public static Level getLoggerLevel() {
 		return G.SETTING_LOGLEVEL;
+	}
+	
+	public static void setLogToFile(boolean logToFile) {
+		G.SETTING_LOG_TO_FILE = logToFile;
+	}
+	
+	public static boolean getLogToFile() {
+		return G.SETTING_LOG_TO_FILE;
 	}
 	
 	public static void setLoggerShowTimestamp(boolean value) {

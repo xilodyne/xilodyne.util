@@ -2,28 +2,52 @@ package xilodyne.util;
 
 import java.util.logging.Level;
 
+import xilodyne.util.io.LoggerOutput;
+
 /**
  * Logging class allowing different levels of output. Logging levels are defined
  * in the global class {@link xilodyne.util.G}.
  * 
  * @author Austin Davis Holiday, aholiday@xilodyne.com
- * @version 0.1
+ * @version 0.2
  *
  */
 
 public class Logger {
+	//If log output to file, then only log_fine is printed to console
 
 	private String className;
 	private String methodName;
 	private Level currentLevelForThisLogOutput;
+	private boolean logFileLocationPrinted; //only print the first time
 
 	public Logger() {
 		this.className = this.getCallerClassName();
+		this.setLogFileLocationPrinted(false);
+	}
+	
+	//set to true to print to file instead of console
+	public Logger(boolean logToFile) {
+		this.className = this.getCallerClassName();
+		G.setLogToFile(logToFile);
+		if (G.getLogToFile() ) {
+			LoggerOutput.openOutputFile();
+			this.setLogFileLocationPrinted(true);
+		}
+	}
+	
+	public Logger(String fPath , String fName) {
+		this.className = this.getCallerClassName();
+		G.setLogToFile(G.LOG_TO_FILE);
+		
+		LoggerOutput.openOutputFile(fPath, fName);
+		this.setLogFileLocationPrinted(true);
 	}
 
 	private void setCurrentLevel(Level level) {
 		this.currentLevelForThisLogOutput = level;
 	}
+	
 
 	/**
 	 * @param assignedLevel {@link xilodyne.util.G}
@@ -81,28 +105,42 @@ public class Logger {
 	// if level is info, show logs set to fine and info
 	// if level is all, show logs set to fine, info and all
 	private void logStart_class_output(String output) {
+		LoggerOutput.log_printlnClassName(this.currentLevelForThisLogOutput, this.className, G.getLoggerLevel().getName());
+		LoggerOutput.log_println(this.currentLevelForThisLogOutput, this.methodName, output);
+		
+		if (G.getLoggerShowTimestamp() && this.getLogFileLocationPrinted()) {
+			LoggerOutput.log_printlnLogFileLocation(G.lF);
+			this.setLogFileLocationPrinted(false);
+		}
+		
+
+	}
+/*	private void logStart_class_output(String output) {
 		if (G.getLoggerLevel() == G.LOG_OFF) {
 			// do nothing
 		}
 		if (G.getLoggerLevel() == G.LOG_FINE) {
 			if (this.currentLevelForThisLogOutput == G.LOG_FINE) {
-				LoggerOutput.log_printlnClassName(this.className, output);
+				LoggerOutput.log_printlnClassName(this.className, G.getLoggerLevel().getName());
 				LoggerOutput.log_println(this.methodName, output);
 			}
 		}
 		if (G.getLoggerLevel() == G.LOG_INFO) {
 			if (this.currentLevelForThisLogOutput == G.LOG_FINE || this.currentLevelForThisLogOutput == G.LOG_INFO) {
-				LoggerOutput.log_printlnClassName(this.className, output);
+				LoggerOutput.log_printlnClassName(this.className, G.getLoggerLevel().getName());
 				LoggerOutput.log_println(this.methodName, output);
 			}
 		}
 		if (G.getLoggerLevel() == G.LOG_DEBUG) {
-			LoggerOutput.log_printlnClassName(this.className, output);
+			LoggerOutput.log_printlnClassName(this.className, G.getLoggerLevel().getName());
 			LoggerOutput.log_println(this.methodName, output);
 		}
 	}
-
+*/
 	private void logLN_println(String output) {
+		LoggerOutput.log_println(this.currentLevelForThisLogOutput, this.methodName, output);
+	}
+	/*private void logLN_println(String output) {
 		if (G.getLoggerLevel() == G.LOG_FINE) {
 			if (this.currentLevelForThisLogOutput == G.LOG_FINE) {
 				LoggerOutput.log_println(this.methodName, output);
@@ -117,8 +155,11 @@ public class Logger {
 			LoggerOutput.log_println(this.methodName, output);
 		}
 	}
-
+*/
 	private void logLN_print(String output) {
+		LoggerOutput.log_print(this.currentLevelForThisLogOutput, this.methodName, output);
+	}
+	/*private void logLN_print(String output) {
 		if (G.getLoggerLevel() == G.LOG_FINE) {
 			if (this.currentLevelForThisLogOutput == G.LOG_FINE) {
 				LoggerOutput.log_print(this.methodName, output);
@@ -133,8 +174,11 @@ public class Logger {
 			LoggerOutput.log_print(this.methodName, output);
 		}
 	}
-
+*/
 	private void logLN_println_noTimestamp(String output) {
+		LoggerOutput.log_println_noTimestamp(this.currentLevelForThisLogOutput, output);
+	}
+/*	private void logLN_println_noTimestamp(String output) {
 		if (G.getLoggerLevel() == G.LOG_FINE) {
 			if (this.currentLevelForThisLogOutput == G.LOG_FINE) {
 				LoggerOutput.log_println_noTimestamp(output);
@@ -149,8 +193,12 @@ public class Logger {
 			LoggerOutput.log_println_noTimestamp(output);
 		}
 	}
+*/
 
 	private void log_print_noTimestamp(String output) {
+		LoggerOutput.log_print_noTimestamp(this.currentLevelForThisLogOutput, output);
+	}
+	/*private void log_print_noTimestamp(String output) {
 		if (G.getLoggerLevel() == G.LOG_FINE) {
 			if (this.currentLevelForThisLogOutput == G.LOG_FINE) {
 				LoggerOutput.log_print_noTimestamp(output);
@@ -165,7 +213,7 @@ public class Logger {
 			LoggerOutput.log_print_noTimestamp(output);
 		}
 	}
-
+*/
 	// http://stackoverflow.com/questions/11306811/how-to-get-the-caller-class-in-java
 	// author: Denys Séguret
 	private String getCallerClassName() {
@@ -199,6 +247,14 @@ public class Logger {
 		// }
 		// return stackTraceElement.getMethodName();
 		this.methodName = stackTraceElement.getMethodName();
+	}
+	
+	private void setLogFileLocationPrinted(boolean value) {
+		this.logFileLocationPrinted = value;
+	}
+	
+	private boolean getLogFileLocationPrinted() {
+		return this.logFileLocationPrinted;
 	}
 
 }

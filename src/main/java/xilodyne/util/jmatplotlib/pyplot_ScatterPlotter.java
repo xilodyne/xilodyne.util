@@ -1,4 +1,4 @@
-package xilodyne.util;
+package xilodyne.util.jmatplotlib;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -31,6 +31,9 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.RectangleEdge;
 
+import xilodyne.util.G;
+import xilodyne.util.Logger;
+
 /**
  * Wrapper class for jFreeChart scatter plot. Configured to match the python
  * matplotlib.pyplot scatter plot methods and presentation.
@@ -39,7 +42,7 @@ import org.jfree.ui.RectangleEdge;
  * @version 0.1
  */
 
-public class ScatterPlotter {
+public class pyplot_ScatterPlotter {
 
 	private Logger log = new Logger();
 
@@ -50,7 +53,7 @@ public class ScatterPlotter {
 	private static final int dimY = 600;
 
 	private XYSeriesCollection graphDataSet = new XYSeriesCollection();
-	private XYSeriesCollection frontierDataset = null;
+	private XYSeriesCollection boundaryDataset = null;
 
 	private XYPlot plot0, plot1;
 	private int seriesIndex = -1;
@@ -66,7 +69,7 @@ public class ScatterPlotter {
 	 * @param xAxis  Name of axis on bottom
 	 * @param yAxis  Name of axis on left side
 	 */
-	public ScatterPlotter(String chartName, String xAxis, String yAxis) {
+	public pyplot_ScatterPlotter(String chartName, String xAxis, String yAxis) {
 		
 		log.logln_withClassName(G.LOG_FINE, "Creating chart [" + chartName +"]");
 		chart = this.createChart(chartName, xAxis, yAxis);
@@ -91,7 +94,7 @@ public class ScatterPlotter {
 																			// axis
 																			// label
 				yAxis, // y axis label
-				this.frontierDataset, // data ***-----PROBLEM------***
+				this.boundaryDataset, // data ***-----PROBLEM------***
 				PlotOrientation.VERTICAL, true, // include legend
 				true, // tooltips
 				false // urls
@@ -146,15 +149,15 @@ public class ScatterPlotter {
 		ta.setMaxWidth(0.48);
 		plot1.addAnnotation(ta);
 
-		chart.getXYPlot().setRenderer(ScatterPlotter.REND_FRONTIER, renderFrontier);
-		chart.getXYPlot().setRenderer(ScatterPlotter.REND_DATA, renderData);
+		chart.getXYPlot().setRenderer(pyplot_ScatterPlotter.REND_FRONTIER, renderFrontier);
+		chart.getXYPlot().setRenderer(pyplot_ScatterPlotter.REND_DATA, renderData);
 
 		return chart;
 
 	}
 
 	/**
-	 * Create a visual boundary in the chart background based upon
+	 * Create a visual decision boundary in the chart background based upon
 	 * the dataset.  Values can be either 0 or 1.  0 added to Series 0
 	 * coordinates, 1 added to Series 1 coordinates.  Each series has 
 	 * its own color.
@@ -165,7 +168,7 @@ public class ScatterPlotter {
 	 */
 	public void addFrontier(double[][] frontier, Color cOne, Color cTwo) {
 		log.logln(G.lF, "Creating frontier.");
-		frontierDataset = this.loadFrontierDataset(frontier);
+		boundaryDataset = this.loadFrontierDataset(frontier);
 		int dotSizeHeight = dimY / frontier[0].length;
 		int dotSizeWidth = dimX / frontier.length;
 		log.logln_withClassName(G.lD, "Dot size x,y: " + dotSizeWidth + "," + dotSizeHeight);
@@ -175,7 +178,7 @@ public class ScatterPlotter {
 		renderFrontier.setSeriesPaint(0, cOne);
 		renderFrontier.setSeriesPaint(1, cTwo);
 
-		plot0.setDataset(ScatterPlotter.REND_FRONTIER, frontierDataset);
+		plot0.setDataset(pyplot_ScatterPlotter.REND_FRONTIER, boundaryDataset);
 
 	}
 
@@ -194,7 +197,7 @@ public class ScatterPlotter {
 		renderData.setSeriesPaint(nextSeriesIndex, color);
 		this.graphDataSet.addSeries(this.createDatasetSeries(name, x, y));
 		// this.graphDataSet.addSeries(series);
-		plot1.setDataset(ScatterPlotter.REND_DATA, this.graphDataSet);
+		plot1.setDataset(pyplot_ScatterPlotter.REND_DATA, this.graphDataSet);
 
 		chartLegend.add(new LegendItem(name + "  ", null, null, null, this.createCircle(10), color));
 		plot1.setFixedLegendItems(chartLegend);
