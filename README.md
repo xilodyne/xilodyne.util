@@ -1,6 +1,6 @@
 # Xilodyne Utilities
 
-Various support libraries.  Check respository src files for possible tests and examples.
+Various support libraries.  Check repository src files for possible tests and examples.
 
 Libraries may require other xilodyne-util jars and/or public
 projects which can be accessed from maven (add the dependency
